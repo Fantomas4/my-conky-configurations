@@ -101,7 +101,7 @@ conky.config = {
 	--Windows
 
 	own_window = true,							-- create your own window to draw
-	own_window_argb_value = 180,			    -- real transparency - composite manager required 0-255
+	own_window_argb_value = 50,			    -- real transparency - composite manager required 0-255
 	own_window_argb_visual = true,				-- use ARGB - composite manager required
 	own_window_colour = '#000000',				-- set colour if own_window_transparent no
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
@@ -182,13 +182,14 @@ ${else}\
 ${if_existing /sys/class/net/enp0s31f6/operstate up}
 ${color1}Local IP:${color}${alignr}${color1}Connection Type:${color}
 ${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}Wired${color}
-${voffset -10}
+${voffset -5}
 Download ${alignr}${downspeedf enp0s31f6}KiB/s (${totaldown enp0s31f6})
 ${color1}${downspeedgraph enp0s31f6 50,300 ADFF2F 32CD32 -t}
 Upload ${alignr}${upspeedf enp0s31f6}KiB/s (${totalup enp0s31f6})
 ${color1}${upspeedgraph enp0s31f6 50,300 FF0000 8B0000 -t}
 ${else}
-
+${voffset 0}
+${color1}${alignc}No network connection detected!${color}
 ${endif}
 ${endif}
 ${color1}${font Roboto:bold:size=10}T O P  P R O C E S S E S ${color}${color2}${hr 2}${font}${color}
