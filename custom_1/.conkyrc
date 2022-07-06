@@ -101,7 +101,7 @@ conky.config = {
 	--Windows
 
 	own_window = true,							-- create your own window to draw
-	own_window_argb_value = 160,			    -- real transparency - composite manager required 0-255
+	own_window_argb_value = 180,			    -- real transparency - composite manager required 0-255
 	own_window_argb_visual = true,				-- use ARGB - composite manager required
 	own_window_colour = '#000000',				-- set colour if own_window_transparent no
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
@@ -113,12 +113,11 @@ conky.config = {
 	--Colours
 
 	default_color = '#D9DDE2',  				-- default color and border color
-	color1 = '#FFFFFF',
-	color2 = '#E60012',
-	--color3 = '#cccccc',
-	--color4 = '#D9BC83',
-	--color5 = '#00BFFF',                         --teal
-	--color6 = '#FFFFFF',                         --white
+	color1 = '#FFFFFF',							-- white
+	color2 = '#E60012',							-- ThinkPad red
+	color3 = '#0394FF',							-- CPU blue
+	color5 = '#FFA726',                         -- orange
+	color6 = '#FFFB03',                         -- yellow
 
 	--Signal Colours
 	color7 = '#C0FF00',  						--green
@@ -131,20 +130,24 @@ conky.config = {
 };
 
 conky.text = [[
-${color6}${voffset 4}${font GE Inspira:size=36}${alignc}${time %l}:${time %M} ${time %p}${font}${color}
-${color6}${voffset 4}${font GE Inspira:size=12}${alignc}${time %A} ${time %B} ${time %e}, ${time %Y}${font}${color}
+${color1}${voffset 4}${font GE Inspira:size=36}${alignc}${time %l}:${time %M} ${time %p}${font}${color}
+${color1}${voffset 4}${font GE Inspira:size=12}${alignc}${time %A} ${time %B} ${time %e}, ${time %Y}${font}${color}
 
 ${color1}${font Roboto:bold:size=10}${voffset 2}S Y S T E M   ${color}${color2}${hr 2}${font}${color}
-${color1}Hostname:${color6} ${alignr}${nodename}
-${color1}OS: $alignr ${color6}${execi 6000 lsb_release -d| awk '{$1=""; print $0}'}
-${color1}Kernel: $alignr ${color6} $kernel
-${color1}Architecture: $alignr ${color6} $machine
-${color1}Uptime:${color6} ${alignr} ${uptime}
+
+${voffset -30}
+${color1}Hostname:${color1} ${alignr}${nodename}
+${color1}OS: $alignr ${color1}${execi 6000 lsb_release -d| awk '{$1=""; print $0}'}
+${color1}Kernel: $alignr ${color1} $kernel
+${color1}Architecture: $alignr ${color1} $machine
+${color1}Uptime:${color1} ${alignr} ${uptime}
 
 ${color1}${font Roboto:bold:size=10}P R O C E S S O R S  ${color}${color2}${hr 2}${font}${color}
+
+${voffset -30}
 ${execi 1000 grep model /proc/cpuinfo | cut -d : -f2 | tail -1 | sed 's/\s//'}
-${cpugraph cpu0}
-CPU Usage: ${cpu cpu0}% ${cpubar cpu0}
+${cpugraph cpu0  0394FF 004B82 -t}
+CPU ${color3}Usage: ${color}${cpu cpu0}% ${cpubar cpu0}
 ${voffset -10}
 ${color1}CPU${color} ${color2}Core 1:${color} ${alignr}${offset -10}${cpu cpu1}% ${alignr}${cpubar cpu1 15,80}
 ${color1}CPU${color} ${color2}Core 2:${color} ${alignr}${offset -10}${cpu cpu2}% ${alignr}${cpubar cpu1 15,80}
@@ -156,31 +159,42 @@ ${color1}CPU Temp:${color} $alignr ${acpitemp}°C
 ${color1}Fan Speed:${color} $alignr ${ibm_fan}rpm
 
 ${color1}${font Roboto:bold:size=10}M E M O R Y   ${color}${color2}${hr 2}${font}${color}
+
+${voffset -30}
 RAM $alignc $mem / $memmax $alignr $memperc%
-$membar
+${color5}${membar}${color}
 SWAP $alignc ${swap} / ${swapmax} $alignr ${swapperc}%
-${swapbar}
+${color5}${swapbar}${color}
 
 ${color1}${font Roboto:bold:size=10}N E T W O R K  ${color}${color2}${hr 2}${font}${color}
-${color1}Local IPs:${alignr}External IP:${color}
-${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}  ${alignr}${execi 1000  wget -q -O- http://ipecho.net/plain; echo}
+${voffset -30}
 # Determine if the active network interface is wireless
 ${if_existing /sys/class/net/wlp4s0/operstate up}
-${font}Download ${alignr}${downspeedf wlp4s0}KiB/s (${totaldown wlp4s0})
-${color3}${downspeedgraph wlp4s0 50,300 ADFF2F 32CD32 -t}
-${font Montserrat Light:size=10}${font}Upload ${alignr}${upspeedf wlp4s0}KiB/s (${totalup wlp4s0})
-${color3}${upspeedgraph wlp4s0 50,300 FF0000 8B0000 -t}
+${color1}Local IP:${color}${alignr}${color1}Connection Type:${color}
+${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}Wireless${color}
+${voffset -5}
+Download ${alignr}${downspeedf wlp4s0}KiB/s (${totaldown wlp4s0})
+${color1}${downspeedgraph wlp4s0 50,300 ADFF2F 32CD32 -t}
+Upload ${alignr}${upspeedf wlp4s0}KiB/s (${totalup wlp4s0})
+${color1}${upspeedgraph wlp4s0 50,300 FF0000 8B0000 -t}
 ${else}\
 # Determine if the active network interface is wired
 ${if_existing /sys/class/net/enp0s31f6/operstate up}
-${font}Download ${alignr}${downspeedf enp0s31f6}KiB/s (${totaldown enp0s31f6})
-${color3}${downspeedgraph enp0s31f6 50,300 ADFF2F 32CD32 -t}
-${font Montserrat Light:size=10}${font}Upload ${alignr}${upspeedf enp0s31f6}KiB/s (${totalup enp0s31f6})
-${color3}${upspeedgraph enp0s31f6 50,300 FF0000 8B0000 -t}
+${color1}Local IP:${color}${alignr}${color1}Connection Type:${color}
+${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}Wired${color}
+${voffset -10}
+Download ${alignr}${downspeedf enp0s31f6}KiB/s (${totaldown enp0s31f6})
+${color1}${downspeedgraph enp0s31f6 50,300 ADFF2F 32CD32 -t}
+Upload ${alignr}${upspeedf enp0s31f6}KiB/s (${totalup enp0s31f6})
+${color1}${upspeedgraph enp0s31f6 50,300 FF0000 8B0000 -t}
+${else}
+
 ${endif}
 ${endif}
 ${color1}${font Roboto:bold:size=10}T O P  P R O C E S S E S ${color}${color2}${hr 2}${font}${color}
-${font Roboto Mono:normal:size=9}Name $alignr PID   CPU%   MEM%${font}${font Roboto Mono:normal:size=9}
+
+${voffset -30}
+${font Roboto Mono:normal:size=9}${color6}Name${color} $alignr ${color6}PID${color}    ${color3}CPU%${color}   ${color5}MEM%${color}${font}${font Roboto Mono:normal:size=9}
 ${top name 1} $alignr ${top pid 1} ${top cpu 1}% ${top mem 1}%
 ${top name 2} $alignr ${top pid 2} ${top cpu 2}% ${top mem 2}%
 ${top name 3} $alignr ${top pid 3} ${top cpu 3}% ${top mem 3}%
