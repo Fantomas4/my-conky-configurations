@@ -72,7 +72,7 @@ conky.config = {
 	default_bar_height = 10,					-- default is 6
 	default_gauge_height = 25,					-- default is 25
 	default_gauge_width = 40,					-- default is 40
-	default_graph_height = 40,					-- default is 25
+	default_graph_height = 35,					-- default is 25
 	default_graph_width = 0,					-- default is 0 - full width
 	default_shade_color = '#000000',			-- default shading colour
 	default_outline_color = '#000000',			-- default outline colour
@@ -101,7 +101,7 @@ conky.config = {
 	--Windows
 
 	own_window = true,							-- create your own window to draw
-	own_window_argb_value = 50,			    -- real transparency - composite manager required 0-255
+	own_window_argb_value = 170,			    -- real transparency - composite manager required 0-255
 	own_window_argb_visual = true,				-- use ARGB - composite manager required
 	own_window_colour = '#000000',				-- set colour if own_window_transparent no
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
@@ -115,14 +115,22 @@ conky.config = {
 	default_color = '#D9DDE2',  				-- default color and border color
 	color1 = '#FFFFFF',							-- white
 	color2 = '#E60012',							-- ThinkPad red
-	color3 = '#0394FF',							-- CPU blue
-	color5 = '#FFA726',                         -- orange
+	color3 = '#03C4FF',							-- CPU blue
+	color5 = '#0071C5',                         -- CPU intel blue
 	color6 = '#FFFB03',                         -- yellow
+	color7 = '#a600d9',  						-- purple
 
 	--Signal Colours
-	color7 = '#C0FF00',  						--green
-	color8 = '#FFA726',  						--orange
-	color9 = '#F1544B',  						--firebrick
+	color8 = '#8B0000',							-- red
+	color9 = '#FFA726',  						-- orange
+	color10 = '#32CD32',						-- green
+	color11 = '#F1544B',  						-- firebrick
+	
+	--Bar Level Colours
+	color12 = 'FF6000',
+	color13 = 'FFA800',
+	color14 = 'FFFC2A',
+	color15 = '24FF00',							
 
     --Lua
 
@@ -146,37 +154,41 @@ ${color1}${font Roboto:bold:size=10}P R O C E S S O R S  ${color}${color2}${hr 2
 
 ${voffset -30}
 ${execi 1000 grep model /proc/cpuinfo | cut -d : -f2 | tail -1 | sed 's/\s//'}
-${cpugraph cpu0  0394FF 004B82 -t}
-CPU ${color3}Usage: ${color}${cpu cpu0}% ${cpubar cpu0}
+${cpugraph cpu0 50,0 0394FF 004B82 -t}
+${color1}CPU${color} ${color3}Usage: ${color}${cpu cpu0}% ${color1}${cpubar cpu0}${color}
 ${voffset -10}
-${color1}CPU${color} ${color2}Core 1:${color} ${alignr}${offset -10}${cpu cpu1}% ${alignr}${cpubar cpu1 15,80}
-${color1}CPU${color} ${color2}Core 2:${color} ${alignr}${offset -10}${cpu cpu2}% ${alignr}${cpubar cpu1 15,80}
-${color1}CPU${color} ${color2}Core 3:${color} ${alignr}${offset -10}${cpu cpu3}% ${alignr}${cpubar cpu1 15,80}
-${color1}CPU${color} ${color2}Core 4:${color} ${alignr}${offset -10}${cpu cpu4}% ${alignr}${cpubar cpu1 15,80}
+${color1}CPU${color} ${color3}Core 1:${color} ${alignr}${offset -10}${cpu cpu1}% ${alignr}${color1}${cpubar cpu1 15,80}
+${color1}CPU${color} ${color3}Core 2:${color} ${alignr}${offset -10}${cpu cpu2}% ${alignr}${color1}${cpubar cpu1 15,80}
+${color1}CPU${color} ${color3}Core 3:${color} ${alignr}${offset -10}${cpu cpu3}% ${alignr}${color1}${cpubar cpu1 15,80}
+${color1}CPU${color} ${color3}Core 4:${color} ${alignr}${offset -10}${cpu cpu4}% ${alignr}${color1}${cpubar cpu1 15,80}
 ${voffset -10}
-${color1}CPU Freq:${color} $alignr${freq}MHz
-${color1}CPU Temp:${color} $alignr ${acpitemp}°C
+${color1}CPU${color} ${color3}Freq:${color} $alignr${freq}MHz
+${color1}CPU${color} ${color3}Temp:${color} $alignr ${acpitemp}°C
 ${color1}Fan Speed:${color} $alignr ${ibm_fan}rpm
 
 ${color1}${font Roboto:bold:size=10}M E M O R Y   ${color}${color2}${hr 2}${font}${color}
 
 ${voffset -30}
 RAM $alignc $mem / $memmax $alignr $memperc%
-${color5}${membar}${color}
+${color1}${membar}${color}
 SWAP $alignc ${swap} / ${swapmax} $alignr ${swapperc}%
-${color5}${swapbar}${color}
+${color1}${swapbar}${color}
+SSD $alignc $fs_used / $fs_size $alignr $fs_used_perc%
+${color1}${fs_bar}${color}
+IO ${alignr}${diskio}/s
+${diskiograph 25,0}
 
 ${color1}${font Roboto:bold:size=10}N E T W O R K  ${color}${color2}${hr 2}${font}${color}
 ${voffset -30}
 # Determine if the active network interface is wireless
 ${if_existing /sys/class/net/wlp4s0/operstate up}
-${color1}Local IP:${color}${alignr}${color1}Connection Type:${color}
-${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}Wireless${color}
+${color1}Local IP:${color}${alignr}${color1}Signal Strength:${color}
+${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}${wireless_link_bar 10,102,wlp4s0}${color}
 ${voffset -5}
 Download ${alignr}${downspeedf wlp4s0}KiB/s (${totaldown wlp4s0})
-${color1}${downspeedgraph wlp4s0 50,300 ADFF2F 32CD32 -t}
+${color1}${downspeedgraph wlp4s0 ADFF2F 32CD32 -t}
 Upload ${alignr}${upspeedf wlp4s0}KiB/s (${totalup wlp4s0})
-${color1}${upspeedgraph wlp4s0 50,300 FF0000 8B0000 -t}
+${color1}${upspeedgraph wlp4s0 FF0000 8B0000 -t}
 ${else}\
 # Determine if the active network interface is wired
 ${if_existing /sys/class/net/enp0s31f6/operstate up}
@@ -184,9 +196,9 @@ ${color1}Local IP:${color}${alignr}${color1}Connection Type:${color}
 ${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | sed 's/[^0-9\.]*//g'}${alignr}${color1}Wired${color}
 ${voffset -5}
 Download ${alignr}${downspeedf enp0s31f6}KiB/s (${totaldown enp0s31f6})
-${color1}${downspeedgraph enp0s31f6 50,300 ADFF2F 32CD32 -t}
+${color1}${downspeedgraph enp0s31f6 ADFF2F 32CD32 -t}
 Upload ${alignr}${upspeedf enp0s31f6}KiB/s (${totalup enp0s31f6})
-${color1}${upspeedgraph enp0s31f6 50,300 FF0000 8B0000 -t}
+${color1}${upspeedgraph enp0s31f6 FF0000 8B0000 -t}
 ${else}
 ${voffset 0}
 ${color1}${alignc}No network connection detected!${color}
@@ -195,7 +207,7 @@ ${endif}
 ${color1}${font Roboto:bold:size=10}T O P  P R O C E S S E S ${color}${color2}${hr 2}${font}${color}
 
 ${voffset -30}
-${font Roboto Mono:normal:size=9}${color6}Name${color} $alignr ${color6}PID${color}    ${color3}CPU%${color}   ${color5}MEM%${color}${font}${font Roboto Mono:normal:size=9}
+${font Roboto Mono:normal:size=9}${color3}Name${color} $alignr ${color3}PID${color}    ${color3}CPU%${color}   ${color3}MEM%${color}${font}${font Roboto Mono:normal:size=9}
 ${top name 1} $alignr ${top pid 1} ${top cpu 1}% ${top mem 1}%
 ${top name 2} $alignr ${top pid 2} ${top cpu 2}% ${top mem 2}%
 ${top name 3} $alignr ${top pid 3} ${top cpu 3}% ${top mem 3}%
